@@ -9,9 +9,9 @@ print("DATABASE_URL from env:", os.environ.get("DATABASE_URL", "NOT SET"), flush
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "83e730bb4116a068b73e413c5e23df2328ba339581646b4f059dc9d0d5c6a6d5")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "a8G8GvNKQMvTFCte4PFwQKTEKmrWUKKT")
 
-    _db_url = os.environ.get("DATABASE_URL", "postgresql://owl_user:owl_pass@localhost/owl_db")
+    _db_url = os.environ.get("DATABASE_URL", "postgresql://owl_db_h9te_user:a8G8GvNKQMvTFCte4PFwQKTEKmrWUKKT@dpg-d7iho8vavr4c73fnehng-a/owl_db_h9te")
     if _db_url.startswith("postgres://"):
         _db_url = _db_url.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI = _db_url
