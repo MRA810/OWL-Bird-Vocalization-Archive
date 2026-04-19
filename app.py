@@ -12,10 +12,11 @@ def create_app():
     os.makedirs(app.config["BIRD_IMAGES_FOLDER"], exist_ok=True)
     os.makedirs(app.config["AUDIOS_FOLDER"], exist_ok=True)
 
+    # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
 
-    # Register blueprints
+    # Blueprints
     from auth.routes import auth_bp
     from birds.routes import birds_bp
     from audios.routes import audios_bp
@@ -35,12 +36,8 @@ def create_app():
     def forbidden(e):
         return render_template("403.html"), 403
 
+    # ⚠️ For dev only (NOT ideal for production)
     with app.app_context():
         db.create_all()
 
     return app
-
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
