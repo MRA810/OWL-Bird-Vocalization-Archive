@@ -1,0 +1,118 @@
+{% extends "base.html" %} {% block title %}Join OWL — Bird Vocalization
+Archive{% endblock %} {% block content %}
+<div class="auth-page">
+  <div class="form-card">
+    <div class="auth-brand">
+      <div class="auth-brand-logo">◉</div>
+      <div class="auth-brand-name">OWL</div>
+      <div class="auth-brand-tagline">Bird Vocalization Archive</div>
+    </div>
+
+    <div class="form-title">Join the Archive</div>
+    <div class="form-subtitle">Create your contributor account</div>
+
+    <form
+      method="POST"
+      action="{{ url_for('auth.signup') }}"
+      enctype="multipart/form-data"
+    >
+      <div class="form-group">
+        <label class="form-label" for="name">Full Name <span>*</span></label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          placeholder="Your Name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username <span>*</span></label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control"
+          placeholder="name_123"
+          pattern="[a-zA-Z0-9_]+"
+          title="Letters, numbers, and underscores only"
+          required
+        />
+        <p class="form-hint">
+          Letters, numbers, underscores only. Your profile URL: /u/username
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email <span>*</span></label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          placeholder="you@example.com"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password <span>*</span></label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          placeholder="At least 6 characters"
+          minlength="6"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirm_password"
+          >Confirm Password <span>*</span></label
+        >
+        <input
+          type="password"
+          id="confirm_password"
+          name="confirm_password"
+          class="form-control"
+          placeholder="Repeat your password"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Profile Picture</label>
+        <div
+          class="upload-area"
+          onclick="document.getElementById('profile_image').click()"
+        >
+          <input
+            type="file"
+            id="profile_image"
+            name="profile_image"
+            accept="image/*"
+          />
+          <div class="upload-icon">👤</div>
+          <div class="upload-text">Click or drag to upload a profile photo</div>
+          <div class="upload-preview"><img src="" alt="Preview" /></div>
+        </div>
+        <p class="form-hint">Optional. PNG, JPG, GIF, WEBP accepted.</p>
+      </div>
+
+      <button type="submit" class="btn btn-accent btn-full btn-lg">
+        Create Account →
+      </button>
+    </form>
+
+    <div class="form-divider">or</div>
+    <div class="form-footer">
+      Already a member?
+      <a href="{{ url_for('auth.login') }}">Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

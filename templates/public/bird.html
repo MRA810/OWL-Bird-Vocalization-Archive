@@ -1,0 +1,269 @@
+{% extends "base.html" %} {% block title %}{{ bird.bird_name }} — OWL{% endblock
+%} {% block content %}
+<div class="container">
+  <!-- BACK -->
+  <a
+    href="{{ url_for('public.home') }}"
+    class="text-muted text-mono"
+    style="
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+    "
+  >
+    ← Back to Archive
+  </a>
+
+  <!-- BIRD HERO -->
+  <div class="bird-hero">
+    <!-- Image -->
+    <div class="bird-hero-image">
+      {% if bird.image_path %}
+      <img
+        src="{{ url_for('public.uploaded_file', filename='bird_images/' + bird.image_path) }}"
+        alt="{{ bird.bird_name }}"
+      />
+      {% else %}
+      <div class="bird-hero-image-placeholder">🦅</div>
+      {% endif %}
+    </div>
+
+    <!-- Info -->
+    <div class="bird-hero-info">
+      <div class="bird-species-label">◉ Species Record</div>
+
+      <h1 class="bird-hero-name">
+        {{ bird.bird_name }} {% if bird.is_hidden %}
+        <span
+          style="
+            font-size: 0.45em;
+            vertical-align: middle;
+            background: var(--text);
+            color: var(--bg);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+          "
+          >HIDDEN</span
+        >
+        {% endif %}
+      </h1>
+
+      {% if bird.description %}
+      <p class="bird-hero-desc">{{ bird.description }}</p>
+      {% endif %}
+
+      <!-- Uploader -->
+      <a
+        href="{{ url_for('public.profile', username=bird.owner.username) }}"
+        class="bird-hero-uploader"
+        style="text-decoration: none"
+      >
+        <img
+          src="{{ url_for('public.uploaded_file', filename='profile_pics/' + bird.owner.profile_image) }}"
+          alt="{{ bird.owner.name }}"
+          onerror="this.style.display = 'none'"
+        />
+        <div>
+          <div style="color: var(--text); font-weight: 700">
+            {{ bird.owner.name }}
+          </div>
+          <div style="color: var(--text-muted)">
+            @{{ bird.owner.username }} · {{ bird.owner.tag }}
+          </div>
+        </div>
+        <span style="margin-left: auto; color: var(--accent)">→</span>
+      </a>
+
+      <!-- Meta -->
+      <div
+        style="
+          display: flex;
+          gap: 1rem;
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--text-muted);
+        "
+      >
+        <span>Added {{ bird.created_at.strftime('%b %d, %Y') }}</span>
+        {% if bird.downloadable %}
+        <span style="color: var(--success)">✓ Images downloadable</span>
+        {% endif %}
+      </div>
+
+      <!-- Owner actions -->
+      {% if is_owner %}
+      <div class="bird-hero-actions">
+        {% if bird.downloadable and bird.image_path %}
+        <a
+          href="{{ url_for('public.serve_image', filename=bird.image_path) }}"
+          class="btn btn-ghost"
+        >
+          ↓ Download Image
+        </a>
+        {% elif bird.downloadable %}
+        <span class="btn btn-ghost" style="pointer-events: none; opacity: 0.4"
+          >↓ Download Image</span
+        >
+        {% endif %}
+        <a
+          href="{{ url_for('audios.upload_audio', bird_id=bird.id) }}"
+          class="btn btn-accent btn-sm"
+          >+ Upload Audio</a
+        >
+        <a
+          href="{{ url_for('birds.edit_bird', bird_id=bird.id) }}"
+          class="btn btn-outline btn-sm"
+          >Edit</a
+        >
+        <form
+          method="POST"
+          action="{{ url_for('birds.hide_bird', bird_id=bird.id) }}"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-ghost btn-sm">
+            {% if bird.is_hidden %}👁 Show{% else %}🚫 Hide{% endif %}
+          </button>
+        </form>
+        <form
+          method="POST"
+          action="{{ url_for('birds.delete_bird', bird_id=bird.id) }}"
+          style="display: inline"
+        >
+          <button
+            type="submit"
+            class="btn btn-danger btn-sm"
+            data-confirm="Permanently delete '{{ bird.bird_name }}' and ALL its audio samples? This cannot be undone."
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+      {% else %} {% if bird.downloadable and bird.image_path %}
+      <div class="bird-hero-actions">
+        <a
+          href="{{ url_for('public.serve_image', filename=bird.image_path) }}"
+          class="btn btn-outline btn-sm"
+          >↓ Download Image</a
+        >
+      </div>
+      {% endif %} {% endif %}
+    </div>
+  </div>
+
+  <!-- AUDIO SAMPLES -->
+  <p class="section-label">
+    Audio Samples — {{ audios|length }} recording{% if audios|length != 1 %}s{%
+    endif %}
+  </p>
+
+  {% if is_owner %}
+  <div style="margin-bottom: 1.5rem">
+    <a
+      href="{{ url_for('audios.upload_audio', bird_id=bird.id) }}"
+      class="btn btn-accent btn-sm"
+      >+ Upload New Audio</a
+    >
+  </div>
+  {% endif %} {% if audios %}
+  <div class="audio-list">
+    {% for audio in audios %}
+    <div class="audio-card {% if audio.is_hidden %}is-hidden{% endif %}">
+      <div class="audio-card-header">
+        <div>
+          <span class="audio-type-badge">{{ audio.vocalization_type }}</span>
+          {% if audio.is_hidden %}
+          <span
+            style="
+              font-family: var(--font-mono);
+              font-size: 0.65rem;
+              color: var(--text-muted);
+              margin-left: 8px;
+            "
+            >[hidden]</span
+          >
+          {% endif %}
+        </div>
+        {% if is_owner %}
+        <div class="audio-card-actions" style="margin-top: 0">
+          <a
+            href="{{ url_for('audios.edit_audio', audio_id=audio.id) }}"
+            class="btn btn-ghost"
+            style="padding: 4px 10px; font-size: 0.7rem"
+            >Edit</a
+          >
+          <form
+            method="POST"
+            action="{{ url_for('audios.hide_audio', audio_id=audio.id) }}"
+            style="display: inline"
+          >
+            <button
+              type="submit"
+              class="btn btn-ghost"
+              style="padding: 4px 10px; font-size: 0.7rem"
+            >
+              {% if audio.is_hidden %}Show{% else %}Hide{% endif %}
+            </button>
+          </form>
+          <form
+            method="POST"
+            action="{{ url_for('audios.delete_audio', audio_id=audio.id) }}"
+            style="display: inline"
+          >
+            <button
+              type="submit"
+              class="btn btn-danger"
+              style="padding: 4px 10px; font-size: 0.7rem"
+              data-confirm="Delete this audio sample permanently?"
+            >
+              ✕
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if audio.description %}
+      <p class="audio-card-desc">{{ audio.description }}</p>
+      {% endif %} {% if audio.extra_info %}
+      <div class="audio-card-extra">ℹ {{ audio.extra_info }}</div>
+      {% endif %}
+
+      <audio controls preload="none">
+        <source
+          src="{{ url_for('public.uploaded_file', filename='audios/' + audio.audio_path) }}"
+        />
+        Your browser does not support the audio element.
+      </audio>
+
+      <p class="audio-date">
+        Recorded {{ audio.created_at.strftime('%b %d, %Y at %H:%M') }}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🎵</div>
+    <h3>No audio samples yet</h3>
+    <p>
+      {% if is_owner %}Upload the first vocalization recording for this
+      species.{% else %}No recordings have been added yet.{% endif %}
+    </p>
+    {% if is_owner %}
+    <br />
+    <a
+      href="{{ url_for('audios.upload_audio', bird_id=bird.id) }}"
+      class="btn btn-accent"
+      >Upload Audio</a
+    >
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

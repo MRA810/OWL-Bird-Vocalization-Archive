@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block title %}OWL — Bird Vocalization Archive{%
+endblock %} {% block content %}
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-tag">Open & Public Archive</p>
+  <h1>Hear the<br /><span>Wild</span></h1>
+  <p class="hero-sub">
+    A community-driven archive of bird vocalizations. Every call, song, and
+    alarm — preserved for all.
+  </p>
+  <div class="hero-actions">
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-accent btn-lg"
+      >Join the Archive</a
+    >
+    <a
+      href="{{ url_for('auth.login') }}"
+      class="btn btn-outline btn-lg"
+      style="color: #eaeffe; border-color: #eaeffe"
+      >Sign In</a
+    >
+    {% else %}
+    <a href="{{ url_for('birds.create_bird') }}" class="btn btn-accent btn-lg"
+      >+ Add a Bird</a
+    >
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  <p class="section-label">Recent Additions — {{ birds|length }} entries</p>
+
+  {% if birds %}
+  <div class="bird-grid">
+    {% for bird in birds %}
+    <a
+      href="{{ url_for('public.bird_page', bird_id=bird.id) }}"
+      class="bird-card"
+    >
+      <div class="bird-card-image">
+        {% if bird.image_path %}
+        <img
+          src="{{ url_for('public.uploaded_file', filename='bird_images/' + bird.image_path) }}"
+          alt="{{ bird.bird_name }}"
+          loading="lazy"
+        />
+        {% else %}
+        <div class="bird-card-image-placeholder">🦅</div>
+        {% endif %}
+      </div>
+      <div class="bird-card-body">
+        <div class="bird-card-name">{{ bird.bird_name }}</div>
+        {% if bird.description %}
+        <div class="bird-card-desc">{{ bird.description }}</div>
+        {% endif %}
+        <div class="bird-card-meta">
+          <img
+            src="{{ url_for('public.uploaded_file', filename='profile_pics/' + bird.owner.profile_image) }}"
+            alt="{{ bird.owner.name }}"
+            class="bird-card-avatar"
+            onerror="this.style.display = 'none'"
+          />
+          <span class="bird-card-uploader">{{ bird.owner.username }}</span>
+          {% set visible_count = bird.audio_samples | selectattr('is_hidden',
+          'equalto', False) | list | length %}
+          <span class="bird-card-count"
+            >{{ visible_count }} audio{% if visible_count != 1 %}s{% endif
+            %}</span
+          >
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🦉</div>
+    <h3>The archive is empty</h3>
+    <p>Be the first to add a bird vocalization.</p>
+    {% if not current_user.is_authenticated %}
+    <br />
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-accent"
+      >Join & Contribute</a
+    >
+    {% else %}
+    <br />
+    <a href="{{ url_for('birds.create_bird') }}" class="btn btn-accent"
+      >Add a Bird</a
+    >
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
