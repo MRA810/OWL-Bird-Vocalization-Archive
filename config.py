@@ -7,7 +7,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "owl-secret-key-change-in-production")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "83e730bb4116a068b73e413c5e23df2328ba339581646b4f059dc9d0d5c6a6d5")
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL", "postgresql://owl_user:owl_pass@localhost/owl_db"
     )
