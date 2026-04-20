@@ -7,10 +7,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Ensure upload directories exist
-    os.makedirs(app.config["PROFILE_PICS_FOLDER"], exist_ok=True)
-    os.makedirs(app.config["BIRD_IMAGES_FOLDER"], exist_ok=True)
-    os.makedirs(app.config["AUDIOS_FOLDER"], exist_ok=True)
+    # Ensure upload directories exist (only in local dev, not on Vercel)
+    if not os.environ.get("VERCEL"):
+        os.makedirs(app.config["PROFILE_PICS_FOLDER"], exist_ok=True)
+        os.makedirs(app.config["BIRD_IMAGES_FOLDER"], exist_ok=True)
+        os.makedirs(app.config["AUDIOS_FOLDER"], exist_ok=True)
 
     # Init extensions
     db.init_app(app)
