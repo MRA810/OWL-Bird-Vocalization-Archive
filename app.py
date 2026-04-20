@@ -37,7 +37,7 @@ def create_app():
         return render_template("403.html"), 403
 
     # ⚠️ For dev only (NOT ideal for production)
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     return app
